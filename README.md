@@ -125,3 +125,7 @@ Firebase Auth and Firestore are configured in the static client. The Firebase we
 8. Sign in as that admin and open the dashboard. It seeds the initial categories and products once, recorded in `appMetadata/catalog-seed-v1`.
 
 The client uses Firebase Authentication for sessions, Firestore for catalog/customer/order data, and browser storage only for the cart. Firestore rules are in `firestore.rules`; admin-only writes are enforced there. Do not loosen these rules to make a client-side write succeed.
+
+## Appearance
+
+The site defaults to the Ember theme, using the orange `hsl(28.11deg 70.28% 48.82%)` brand color with black accents. Use the fixed Theme selector to switch between Ember, Light, Dark, and Blue; the selected theme is saved in this browser. Theme tokens and shared styling live in `css/theme.css`.

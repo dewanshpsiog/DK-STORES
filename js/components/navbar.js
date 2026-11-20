@@ -12,7 +12,7 @@
       target.innerHTML = `
         <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
           <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html"><i class="bi bi-bag-check-fill me-2 text-primary"></i>ShopHub</a>
+            <a class="navbar-brand fw-bold" href="index.html"><img class="brand-mark" src="assets/images/logo.png" alt=""><span>DK Stores</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>

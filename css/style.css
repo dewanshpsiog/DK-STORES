@@ -1,17 +1,4 @@
-:root {
-  --brand-primary: #155eef;
-  --brand-dark: #172b4d;
-  --brand-accent: #f79009;
-  --surface: #fff;
-  --surface-muted: #f5f7fa;
-  --border: #e4e7ec;
-  --text: #344054;
-  --text-muted: #667085;
-  --success: #12b76a;
-  --danger: #f04438;
-  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.08);
-  --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.10);
-}
+@import url("./theme.css");
 
 * {
   box-sizing: border-box;
@@ -23,13 +10,6 @@ body {
   background: var(--surface-muted);
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   font-size: 0.95rem;
-}
-
-.btn-primary {
-  --bs-btn-bg: var(--brand-primary);
-  --bs-btn-border-color: var(--brand-primary);
-  --bs-btn-hover-bg: #0d4ed3;
-  --bs-btn-hover-border-color: #0d4ed3;
 }
 
 .navbar-brand,
@@ -91,8 +71,8 @@ body {
   min-height: 340px;
   display: flex;
   align-items: center;
-  background: #155eef;
-  background-image: linear-gradient(110deg, rgba(16,24,40,.82), rgba(21,94,239,.55)), url("../assets/images/hero-store.svg");
+  background: var(--brand-primary);
+  background-image: var(--hero-overlay), url("../assets/images/hero-store.svg");
   background-size: cover;
   background-position: center;
 }

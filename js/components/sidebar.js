@@ -22,7 +22,7 @@
       target.innerHTML = `
         <aside class="admin-sidebar">
           <a class="d-flex align-items-center text-white text-decoration-none mb-4" href="dashboard.html">
-            <i class="bi bi-bag-check-fill fs-4 me-2"></i><strong>ShopHub Admin</strong>
+            <img class="brand-mark me-2" src="../assets/images/logo.png" alt=""><strong>DK Stores Admin</strong>
           </a>
           <nav class="nav flex-column">
             ${links.map(([page, icon, label]) => `<a class="nav-link ${page === activePage ? "active" : ""}" href="${page}"><i class="bi bi-${icon} me-2"></i>${label}</a>`).join("")}
