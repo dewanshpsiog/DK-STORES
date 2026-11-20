@@ -3,6 +3,10 @@ node_modules/
 *.log
 .env
 .env.*
+serviceAccount*.json
+service-account*.json
+*-firebase-adminsdk-*.json
+functions/.runtimeconfig.json
 
 # Dependencies
 node_modules/

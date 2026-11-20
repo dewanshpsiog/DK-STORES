@@ -59,7 +59,7 @@ The project includes:
 
 - GitHub Actions CI validation for HTML, CSS and JavaScript
 - GitHub Pages deployment for the `main` branch
-- Node.js-based validation tooling only; no application runtime dependency
+- No Node.js runtime for the customer/admin web pages; Firebase Functions use Node.js 22
 - Setup and demo instructions
 
 ## Development validation
@@ -99,9 +99,28 @@ python -m http.server 8000
 
 Open `http://localhost:8000/index.html`.
 
-## Demo accounts
+Customer accounts are created through the signup page. The first admin account must be provisioned in Firebase as described below.
 
-- Admin: `admin@shop.com` / `Admin@123`
-- Customer: `customer@shop.com` / `Customer@123`
+## Firebase setup
 
-Demo authentication is for UI development only and is not production security.
+Firebase Auth and Firestore are configured in the static client. The Firebase web API key is intended to be used in browser configuration, but restrict it in Google Cloud API credentials to the required Firebase APIs and application domains. Never put a Firebase service-account key or Admin SDK credentials in this repository or frontend.
+
+1. In Firebase Console, open the `dewansh-ecom` project and add/select its Web app.
+2. Copy the complete web app config into `api/firebaseConfig.js`. The existing file is missing the Web App `appId` and `messagingSenderId`; replace both empty values from the Firebase Console.
+3. In **Authentication > Sign-in method**, enable **Email/Password**.
+4. In **Authentication > Settings > Authorized domains**, add `localhost` and your GitHub Pages hostname.
+5. Create a Firestore database.
+6. Install the Firebase CLI, sign in, and from this directory run:
+
+   ```powershell
+   npm install --global firebase-tools
+   firebase login
+   npm ci --prefix functions
+   firebase deploy --only firestore:rules,functions
+   ```
+
+   Cloud Functions deployment requires the project to have billing enabled. The callable `createOrder` function validates prices, credit, and stock and commits the order and inventory changes in a Firestore transaction.
+7. Create the first admin user in Firebase Authentication. In Firestore Console, create `users/{AUTH_UID}` with fields `id` (string, same UID), `name` (string), `email` (string), `role` (string `ADMIN`), `isActive` (boolean `true`) and `createdAt` (string). Admin role assignment is intentionally not allowed from the public signup form.
+8. Sign in as that admin and open the dashboard. It seeds the initial categories and products once, recorded in `appMetadata/catalog-seed-v1`.
+
+The client uses Firebase Authentication for sessions, Firestore for catalog/customer/order data, and browser storage only for the cart. Firestore rules are in `firestore.rules`; admin-only writes are enforced there. Do not loosen these rules to make a client-side write succeed.

@@ -6,7 +6,7 @@
       try {
         const value = localStorage.getItem(this.key(key));
         return value === null ? null : JSON.parse(value);
-      } catch (error) {
+      } catch {
         throw new Error("Could not read local application data.");
       }
     },
@@ -15,7 +15,7 @@
       try {
         localStorage.setItem(this.key(key), JSON.stringify(value));
         return true;
-      } catch (error) {
+      } catch {
         throw new Error("Could not save local application data.");
       }
     },
@@ -29,19 +29,9 @@
     },
 
     async initialize() {
-      const keys = window.ShopApp.config.storageKeys;
-      const mock = window.ShopApp.mockData;
-      for (const [name, value] of Object.entries({
-        [keys.categories]: mock.categories,
-        [keys.products]: mock.products,
-        [keys.customers]: mock.customers,
-        [keys.orders]: mock.orders,
-        [keys.cart]: []
-      })) {
-        if (await this.get(name) === null) {
-          await this.set(name, value);
-        }
-      }
+      await window.ShopApp.firebaseReady;
+      const cartKey = window.ShopApp.config.storageKeys.cart;
+      if (await this.get(cartKey) === null) await this.set(cartKey, []);
     }
   };
 

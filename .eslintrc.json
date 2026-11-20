@@ -13,6 +13,14 @@
     "Chart": "readonly",
     "ShopApp": "readonly"
   },
+  "overrides": [
+    {
+      "files": ["api/**/*.js"],
+      "parserOptions": {
+        "sourceType": "module"
+      }
+    }
+  ],
   "rules": {
     "no-unused-vars": "warn",
     "no-undef": "warn"

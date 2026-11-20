@@ -20,4 +20,15 @@
   });
 
   window.ShopApp.config = AppConfig;
+
+  window.ShopApp.firebaseReady = import("../../api/firebase.js")
+    .then((firebaseModule) => firebaseModule.firebaseReady)
+    .then(() => import("../services/firestore-service.js"))
+    .then(() => window.ShopApp.firebase)
+    .catch((error) => {
+      window.ShopApp.firebaseError = error;
+      console.error("Firebase setup could not be loaded:", error);
+      throw error;
+    });
+  window.ShopApp.firebaseReady.catch(() => {});
 })();

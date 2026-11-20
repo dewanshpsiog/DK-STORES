@@ -31,6 +31,7 @@
       `<div class="d-flex justify-content-between mb-2"><span>${item.quantity} × ${item.title}</span><strong>${window.ShopApp.formatters.currency(item.lineTotal)}</strong></div>`
     ).join("");
     document.getElementById("checkoutTotal").textContent = window.ShopApp.formatters.currency(cart.total);
+    const checkoutRequestId = crypto.randomUUID();
 
     document.getElementById("checkoutForm").addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -78,6 +79,7 @@
         }));
         const order = await window.ShopApp.orderService.createOrder({
           customerId: session.id,
+          requestId: checkoutRequestId,
           items: orderItems,
           subtotal: cart.subtotal,
           total: cart.total,
@@ -94,13 +96,6 @@
             pinCode
           }
         });
-        if (paymentMethod === "CREDIT") {
-          await window.ShopApp.customerService.addOutstandingCredit(customer.id, cart.total);
-        }
-        for (const item of cart.items) {
-          const product = await window.ShopApp.productService.getProductById(item.productId);
-          await window.ShopApp.productService.updateProduct(item.productId, { ...product, qty: product.qty - item.quantity });
-        }
         await window.ShopApp.cartService.clearCart();
         window.location.href = `order-success.html?id=${encodeURIComponent(order.id)}`;
       } catch (error) {

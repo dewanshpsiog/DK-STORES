@@ -22,12 +22,17 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
 
       - name: Install validation tools
         run: npm ci
+
+      - name: Install Cloud Functions dependencies
+        run: npm ci --prefix functions
 
       - name: Validate HTML
         run: npm run lint:html
@@ -37,3 +42,6 @@ jobs:
 
       - name: Validate JavaScript
         run: npm run lint:js
+
+      - name: Validate Cloud Functions
+        run: npm --prefix functions run lint

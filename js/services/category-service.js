@@ -1,60 +1,60 @@
 (function () {
   window.ShopApp = window.ShopApp || {};
-  const key = () => window.ShopApp.config.storageKeys.categories;
-  const storage = () => window.ShopApp.storageService;
+  const store = () => window.ShopApp.firestoreService;
+  const collection = "categories";
 
   window.ShopApp.categoryService = {
     async getAllCategories() {
-      return window.ShopApp.apiService.requireSuccess(async () => (await storage().get(key())) || []);
+      return window.ShopApp.apiService.requireSuccess(async () => store().list(collection));
     },
 
     async getCategoryById(id) {
-      return window.ShopApp.apiService.requireSuccess(async () => {
-        const category = (await storage().get(key())).find((item) => item.id === id);
-        if (!category) throw new Error("Category not found.");
-        return category;
-      });
+      return window.ShopApp.apiService.requireSuccess(async () => store().get(collection, id));
     },
 
     async createCategory(category) {
       return window.ShopApp.apiService.requireSuccess(async () => {
-        const categories = (await storage().get(key())) || [];
-        if (categories.some((item) => item.name.toLowerCase() === category.name.trim().toLowerCase())) {
+        const name = String(category.name || "").trim();
+        const description = String(category.description || "").trim();
+        if (!name || !description) throw new Error("Category name and description are required.");
+        const existing = await store().list(collection);
+        if (existing.some((item) => item.name.toLowerCase() === name.toLowerCase())) {
           throw new Error("A category with this name already exists.");
         }
-        const created = {
-          id: `CAT-${String(categories.length + 1).padStart(3, "0")}`,
-          name: category.name.trim(),
-          description: category.description.trim(),
+        const id = `CAT-${crypto.randomUUID().slice(0, 12).toUpperCase()}`;
+        return store().create(collection, id, {
+          name,
+          description,
           isActive: category.isActive !== false,
           createdAt: new Date().toISOString()
-        };
-        await storage().set(key(), [...categories, created]);
-        return created;
+        });
       });
     },
 
     async updateCategory(id, updates) {
       return window.ShopApp.apiService.requireSuccess(async () => {
-        const categories = await storage().get(key());
-        const index = categories.findIndex((item) => item.id === id);
-        if (index === -1) throw new Error("Category not found.");
-        const updated = { ...categories[index], ...updates, id, name: updates.name.trim(), description: updates.description.trim() };
-        categories[index] = updated;
-        await storage().set(key(), categories);
-        return updated;
+        const name = String(updates.name || "").trim();
+        const description = String(updates.description || "").trim();
+        if (!name || !description) throw new Error("Category name and description are required.");
+        const existing = await store().list(collection);
+        if (existing.some((item) => item.id !== id && item.name.toLowerCase() === name.toLowerCase())) {
+          throw new Error("A category with this name already exists.");
+        }
+        return store().update(collection, id, {
+          name,
+          description,
+          isActive: Boolean(updates.isActive)
+        });
       });
     },
 
     async deleteCategory(id) {
       return window.ShopApp.apiService.requireSuccess(async () => {
-        const categories = await storage().get(key());
-        const products = await storage().get(window.ShopApp.config.storageKeys.products);
+        const products = await window.ShopApp.productService.getAllProducts();
         if (products.some((product) => product.cat_id === id)) {
           throw new Error("Cannot delete a category that contains products.");
         }
-        await storage().set(key(), categories.filter((item) => item.id !== id));
-        return true;
+        return store().remove(collection, id);
       });
     }
   };

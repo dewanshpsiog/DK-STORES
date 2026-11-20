@@ -4,6 +4,7 @@
   async function initialize() {
     await window.ShopApp.storageService.initialize();
     await window.ShopApp.adminSidebar.render("adminSidebar", "dashboard.html");
+    await window.ShopApp.productService.seedInitialCatalog();
     const [categories, products, customers, orders] = await Promise.all([
       window.ShopApp.categoryService.getAllCategories(),
       window.ShopApp.productService.getAllProducts(),
