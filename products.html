@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop Products - ShopHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet"><link href="css/components.css" rel="stylesheet"><link href="css/responsive.css" rel="stylesheet">
+</head>
+<body>
+  <div id="siteNavbar"></div>
+  <main class="page-container">
+    <div class="mb-4"><span class="text-primary fw-semibold">Discover</span><h1 class="h2 section-heading mb-0">All products</h1></div>
+    <div class="row g-4">
+      <aside class="col-lg-3">
+        <div class="surface-card p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h6 mb-0">Filters</h2><button class="btn btn-link btn-sm text-decoration-none" id="clearFilters">Clear</button></div>
+          <label class="form-label" for="searchInput">Search</label><input class="form-control mb-3" id="searchInput" type="search" placeholder="Product name">
+          <label class="form-label" for="categoryFilter">Category</label><select class="form-select mb-3" id="categoryFilter"><option value="">All categories</option></select>
+          <label class="form-label">Price range</label><div class="d-flex gap-2"><input class="form-control" id="minPrice" type="number" min="0" placeholder="Min"><input class="form-control" id="maxPrice" type="number" min="0" placeholder="Max"></div>
+        </div>
+      </aside>
+      <section class="col-lg-9">
+        <div class="d-flex align-items-center justify-content-between mb-3"><span class="text-muted" id="resultCount"></span><select class="form-select w-auto" id="sortProducts"><option value="newest">Newest</option><option value="priceAsc">Price: low to high</option><option value="priceDesc">Price: high to low</option></select></div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3" id="productGrid"></div>
+        <nav class="mt-4"><ul class="pagination justify-content-center" id="pagination"></ul></nav>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config/app-config.js"></script><script src="js/config/mock-data.js"></script><script src="js/services/storage-service.js"></script><script src="js/services/api-service.js"></script><script src="js/services/auth-service.js"></script><script src="js/services/category-service.js"></script><script src="js/services/product-service.js"></script><script src="js/services/customer-service.js"></script><script src="js/services/order-service.js"></script><script src="js/services/cart-service.js"></script>
+  <script src="js/utils/formatters.js"></script><script src="js/utils/validators.js"></script><script src="js/utils/date-utils.js"></script>
+  <script src="js/components/navbar.js"></script><script src="js/components/product-card.js"></script><script src="js/components/pagination.js"></script><script src="js/components/notification.js"></script>
+  <script src="js/customer/products.js"></script>
+</body>
+</html>

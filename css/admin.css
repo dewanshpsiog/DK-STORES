@@ -1,0 +1,48 @@
+.admin-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 1.25rem 1rem;
+  color: #fff;
+  background: #101828;
+}
+
+.admin-sidebar .nav-link {
+  margin-bottom: 0.25rem;
+  color: #d0d5dd;
+  border-radius: 8px;
+}
+
+.admin-sidebar .nav-link.active,
+.admin-sidebar .nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-main {
+  min-width: 0;
+  background: #f8fafc;
+}
+
+.admin-header {
+  height: 64px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (width <= 991.98px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: relative;
+    height: auto;
+  }
+}

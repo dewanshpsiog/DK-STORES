@@ -1,0 +1,23 @@
+@media (width <= 991.98px) {
+  .page-container {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .product-card__image {
+    height: 190px;
+  }
+}
+
+@media (width <= 575.98px) {
+  body {
+    font-size: 0.9rem;
+  }
+
+  .page-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .product-card__image {
+    height: 180px;
+  }
+}
