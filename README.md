@@ -100,6 +100,7 @@ python -m http.server 8000
 Open `http://localhost:8000/index.html`.
 
 Customer accounts are created through the signup page. The first admin account must be provisioned in Firebase as described below.
+If an Auth-only customer account already exists, signing in after deploying the Firestore rules creates its missing customer profile with the `CUSTOMER` role.
 
 ## Firebase setup
 
