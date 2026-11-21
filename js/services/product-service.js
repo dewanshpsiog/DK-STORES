@@ -16,11 +16,21 @@
 
   window.ShopApp.productService = {
     async getAllProducts() {
-      return window.ShopApp.apiService.requireSuccess(async () => store().list(collection));
+      return window.ShopApp.apiService.requireSuccess(async () => {
+        try { return await store().list(collection); }
+        catch (_) { return window.ShopApp.mockData.products; }
+      });
     },
 
     async getProductById(id) {
-      return window.ShopApp.apiService.requireSuccess(async () => store().get(collection, id));
+      return window.ShopApp.apiService.requireSuccess(async () => {
+        try { return await store().get(collection, id); }
+        catch (_) {
+          const product = window.ShopApp.mockData.products.find((item) => item.id === id);
+          if (!product) throw new Error("Record not found.");
+          return product;
+        }
+      });
     },
 
     async getProductsByCategory(categoryId) {

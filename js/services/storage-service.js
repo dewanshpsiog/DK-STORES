@@ -29,9 +29,9 @@
     },
 
     async initialize() {
-      await window.ShopApp.firebaseReady;
       const cartKey = window.ShopApp.config.storageKeys.cart;
       if (await this.get(cartKey) === null) await this.set(cartKey, []);
+      return true;
     }
   };
 

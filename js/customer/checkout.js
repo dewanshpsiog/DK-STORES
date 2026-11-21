@@ -116,6 +116,7 @@
         });
         await window.ShopApp.cartService.clearCart();
         await window.ShopApp.storageService.remove("checkoutRequest");
+        window.alert("Order successful");
         window.location.href = `order-success.html?id=${encodeURIComponent(order.id)}`;
       } catch (error) {
         window.ShopApp.notification.show(error.message, "danger");

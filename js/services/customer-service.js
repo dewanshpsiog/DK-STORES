@@ -5,11 +5,25 @@
 
   window.ShopApp.customerService = {
     async getAllCustomers() {
-      return window.ShopApp.apiService.requireSuccess(async () => store().list(collection));
+      return window.ShopApp.apiService.requireSuccess(async () => {
+        try { return await store().list(collection); }
+        catch (_) {
+          const local = (await window.ShopApp.storageService.get("localCustomers")) || [];
+          return [...window.ShopApp.mockData.customers, ...local];
+        }
+      });
     },
 
     async getCustomerById(id) {
-      return window.ShopApp.apiService.requireSuccess(async () => store().get(collection, id));
+      return window.ShopApp.apiService.requireSuccess(async () => {
+        try { return await store().get(collection, id); }
+        catch (_) {
+          const local = (await window.ShopApp.storageService.get("localCustomers")) || [];
+          const customer = [...window.ShopApp.mockData.customers, ...local].find((item) => item.id === id);
+          if (!customer) throw new Error("Record not found.");
+          return customer;
+        }
+      });
     },
 
     async updateCreditLimit(id, amount) {
