@@ -59,7 +59,9 @@
         }
       }
       const submitted = form.querySelector('button[type="submit"]');
+      const originalLabel = submitted.textContent;
       submitted.disabled = true;
+      submitted.textContent = "Placing order...";
       try {
         for (const item of cart.items) {
           const product = await window.ShopApp.productService.getProductById(item.productId);
@@ -101,9 +103,19 @@
       } catch (error) {
         window.ShopApp.notification.show(error.message, "danger");
         submitted.disabled = false;
+        submitted.textContent = originalLabel;
       }
     });
   }
 
-  window.addEventListener("DOMContentLoaded", initialize);
+  window.addEventListener("DOMContentLoaded", () => {
+    initialize().catch((error) => {
+      console.error("Checkout could not be initialized:", error);
+      const message = document.getElementById("checkoutMessage");
+      message.className = "alert alert-danger";
+      message.textContent = `Checkout could not be loaded: ${error.message}. Check your sign-in, Firebase connection, and account profile, then reload the page.`;
+      const submit = document.querySelector('#checkoutForm button[type="submit"]');
+      if (submit) submit.disabled = true;
+    });
+  });
 })();

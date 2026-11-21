@@ -130,7 +130,7 @@ exports.createOrder = onCall({ region: "us-central1" }, async (request) => {
       subtotal: total,
       total,
       paymentMethod,
-      status: "PLACED"
+      status: "PENDING"
     };
 
     productRefs.forEach((reference, index) => {

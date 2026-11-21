@@ -67,6 +67,11 @@ body {
   background: #fef3f2;
 }
 
+.status-pending {
+  color: #8a4b08;
+  background: #fff1d6;
+}
+
 .hero-banner {
   min-height: 340px;
   display: flex;

@@ -35,6 +35,7 @@ The checkout and order lifecycle now includes:
 - Delivery address, city and PIN-code capture
 - Customer and stock validation before placement
 - Cash and credit payment selection
+- New orders start as `PENDING` and appear first in customer order history
 - Available-credit enforcement
 - Unique order IDs and historical line-item prices
 - Customer snapshots and delivery-address snapshots on each order

@@ -21,7 +21,7 @@
       <div class="surface-card p-4 mb-3">
         <div class="d-flex flex-wrap justify-content-between gap-2">
           <div><strong>${order.id}</strong><div class="text-muted small">${window.ShopApp.dateUtils.formatDateTime(order.orderDate)}</div></div>
-          <div><span class="status-badge status-active">${order.status}</span></div>
+          <div><span class="status-badge ${order.status === "PENDING" ? "status-pending" : "status-active"}">${order.status}</span></div>
         </div>
         <hr>
         ${order.items.map((item) => `<div class="d-flex justify-content-between mb-2"><span>${item.quantity} × ${item.title}</span><strong>${window.ShopApp.formatters.currency(item.lineTotal)}</strong></div>`).join("")}
@@ -43,5 +43,18 @@
     document.getElementById("printBill").addEventListener("click", () => window.print());
   }
 
-  window.addEventListener("DOMContentLoaded", initialize);
+  window.addEventListener("DOMContentLoaded", () => {
+    initialize().catch((error) => {
+      console.error("Order history could not be loaded:", error);
+      const container = document.getElementById("orderHistory");
+      container.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          <span id="orderHistoryError"></span>
+          <button class="btn btn-sm btn-outline-danger ms-2" id="retryOrderHistory" type="button">Try again</button>
+        </div>`;
+      document.getElementById("orderHistoryError").textContent =
+        `Your orders could not be loaded: ${error.message}`;
+      document.getElementById("retryOrderHistory").addEventListener("click", () => window.location.reload());
+    });
+  });
 })();

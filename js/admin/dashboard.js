@@ -29,12 +29,22 @@
 
     const customerMap = new Map(customers.map((customer) => [customer.id, customer.name]));
     document.getElementById("recentOrders").innerHTML = orders.slice(0, 8).map((order) =>
-      `<tr><td><strong>${order.id}</strong></td><td>${customerMap.get(order.customerId) || order.customerId}</td><td>${window.ShopApp.dateUtils.formatDate(order.orderDate)}</td><td>${order.paymentMethod}</td><td>${window.ShopApp.formatters.currency(order.total)}</td><td><select class="form-select form-select-sm order-status" data-order-id="${order.id}"><option ${order.status === "PLACED" ? "selected" : ""}>PLACED</option><option ${order.status === "SHIPPED" ? "selected" : ""}>SHIPPED</option><option ${order.status === "DELIVERED" ? "selected" : ""}>DELIVERED</option><option ${order.status === "CANCELLED" ? "selected" : ""}>CANCELLED</option></select></td></tr>`
+      `<tr><td><strong>${order.id}</strong></td><td>${customerMap.get(order.customerId) || order.customerId}</td><td>${window.ShopApp.dateUtils.formatDate(order.orderDate)}</td><td>${order.paymentMethod}</td><td>${window.ShopApp.formatters.currency(order.total)}</td><td><select class="form-select form-select-sm order-status" data-order-id="${order.id}"><option ${order.status === "PENDING" ? "selected" : ""}>PENDING</option><option ${order.status === "PLACED" ? "selected" : ""}>PLACED</option><option ${order.status === "SHIPPED" ? "selected" : ""}>SHIPPED</option><option ${order.status === "DELIVERED" ? "selected" : ""}>DELIVERED</option><option ${order.status === "CANCELLED" ? "selected" : ""}>CANCELLED</option></select></td></tr>`
     ).join("") || '<tr><td colspan="6" class="text-center text-muted py-4">No orders yet.</td></tr>';
     document.getElementById("recentOrders").addEventListener("change", async (event) => {
       const select = event.target.closest(".order-status");
       if (!select) return;
-      await window.ShopApp.orderService.updateOrderStatus(select.dataset.orderId, select.value);
+      const previousStatus = orders.find((order) => order.id === select.dataset.orderId).status;
+      select.disabled = true;
+      try {
+        await window.ShopApp.orderService.updateOrderStatus(select.dataset.orderId, select.value);
+        window.ShopApp.notification.show("Order status updated.", "success");
+      } catch (error) {
+        select.value = previousStatus;
+        window.ShopApp.notification.show(error.message, "danger");
+      } finally {
+        select.disabled = false;
+      }
     });
 
     if (window.Chart) {
