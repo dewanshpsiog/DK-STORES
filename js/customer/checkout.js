@@ -31,7 +31,22 @@
       `<div class="d-flex justify-content-between mb-2"><span>${item.quantity} × ${item.title}</span><strong>${window.ShopApp.formatters.currency(item.lineTotal)}</strong></div>`
     ).join("");
     document.getElementById("checkoutTotal").textContent = window.ShopApp.formatters.currency(cart.total);
-    const checkoutRequestId = crypto.randomUUID();
+    const cartFingerprint = JSON.stringify(
+      cart.items
+        .map((item) => [item.productId, item.quantity])
+        .sort(([firstId], [secondId]) => firstId.localeCompare(secondId))
+    );
+    const pendingCheckout = await window.ShopApp.storageService.get("checkoutRequest");
+    const checkoutRequestId =
+      pendingCheckout && pendingCheckout.cartFingerprint === cartFingerprint
+        ? pendingCheckout.requestId
+        : crypto.randomUUID();
+    if (!pendingCheckout || pendingCheckout.requestId !== checkoutRequestId) {
+      await window.ShopApp.storageService.set("checkoutRequest", {
+        cartFingerprint,
+        requestId: checkoutRequestId
+      });
+    }
 
     document.getElementById("checkoutForm").addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -82,6 +97,7 @@
         const order = await window.ShopApp.orderService.createOrder({
           customerId: session.id,
           requestId: checkoutRequestId,
+          customerName: document.getElementById("fullName").value.trim(),
           items: orderItems,
           subtotal: cart.subtotal,
           total: cart.total,
@@ -99,6 +115,7 @@
           }
         });
         await window.ShopApp.cartService.clearCart();
+        await window.ShopApp.storageService.remove("checkoutRequest");
         window.location.href = `order-success.html?id=${encodeURIComponent(order.id)}`;
       } catch (error) {
         window.ShopApp.notification.show(error.message, "danger");

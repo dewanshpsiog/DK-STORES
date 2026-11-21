@@ -20,6 +20,14 @@ function requireText(value, label, maxLength) {
   return value.trim();
 }
 
+function logCheckoutFailure(uid, requestId, error) {
+  const details =
+    error instanceof Error
+      ? { error: error.message, stack: error.stack }
+      : { error: String(error) };
+  logger.error("createOrder failed", { uid, requestId, ...details });
+}
+
 exports.createOrder = onCall({ region: "us-central1" }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Sign in before placing an order.");
@@ -60,17 +68,34 @@ exports.createOrder = onCall({ region: "us-central1" }, async (request) => {
 
   const quantities = new Map();
   for (const item of input.items) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new HttpsError("invalid-argument", "An order item is invalid.");
+    }
     const productId = requireText(item.productId, "Product ID", 128);
+    if (productId.includes("/")) {
+      throw new HttpsError("invalid-argument", "Product ID is invalid.");
+    }
     const quantity = Number(item.quantity);
-    if (!Number.isInteger(quantity) || quantity < 1) {
+    if (!Number.isSafeInteger(quantity) || quantity < 1) {
       throw new HttpsError(
         "invalid-argument",
         "Product quantities must be positive whole numbers.",
       );
     }
-    quantities.set(productId, (quantities.get(productId) || 0) + quantity);
+    const combinedQuantity = (quantities.get(productId) || 0) + quantity;
+    if (!Number.isSafeInteger(combinedQuantity)) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Product quantities are too large to process.",
+      );
+    }
+    quantities.set(productId, combinedQuantity);
   }
 
+  const submittedName =
+    input.customerName === undefined
+      ? ""
+      : requireText(input.customerName, "Full name", 120);
   const userRef = db.collection("users").doc(uid);
   const customerRef = db.collection("customers").doc(uid);
   const requestRef = db
@@ -217,9 +242,10 @@ exports.createOrder = onCall({ region: "us-central1" }, async (request) => {
       const now = new Date().toISOString();
       const customer = customerSnapshot.data();
       const customerName =
-        typeof customer.name === "string" && customer.name.trim()
+        submittedName ||
+        (typeof customer.name === "string" && customer.name.trim()
           ? customer.name.trim()
-          : request.auth.token.name || "Customer";
+          : request.auth.token.name || "Customer");
       const customerEmail =
         typeof customer.email === "string"
           ? customer.email
@@ -259,13 +285,13 @@ exports.createOrder = onCall({ region: "us-central1" }, async (request) => {
       return order;
     });
   } catch (error) {
-    if (error instanceof HttpsError) throw error;
-    logger.error("createOrder failed unexpectedly", {
-      uid,
-      requestId,
-      error: error.message,
-      stack: error.stack,
-    });
+    if (error instanceof HttpsError) {
+      if (error.code === "internal") {
+        logCheckoutFailure(uid, requestId, error);
+      }
+      throw error;
+    }
+    logCheckoutFailure(uid, requestId, error);
     throw new HttpsError(
       "internal",
       `Order processing failed. Reference: ${requestId}`,

@@ -11,6 +11,7 @@
         try {
           return await store().invoke("createOrder", {
             requestId: order.requestId,
+            customerName: order.customerName,
             items: order.items.map((item) => ({
               productId: item.productId,
               quantity: Number(item.quantity)

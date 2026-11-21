@@ -45,3 +45,6 @@ jobs:
 
       - name: Validate Cloud Functions
         run: npm --prefix functions run lint
+
+      - name: Test Cloud Functions
+        run: npm --prefix functions test

@@ -67,8 +67,11 @@ The project includes:
 
 ```powershell
 cd online-shopping
-npm install
+npm ci
 npm run lint
+npm ci --prefix functions
+npm --prefix functions run lint
+npm --prefix functions test
 ```
 
 Start the static application:
@@ -108,7 +111,7 @@ If an Auth-only customer account already exists, signing in after deploying the 
 Firebase Auth and Firestore are configured in the static client. The Firebase web API key is intended to be used in browser configuration, but restrict it in Google Cloud API credentials to the required Firebase APIs and application domains. Never put a Firebase service-account key or Admin SDK credentials in this repository or frontend.
 
 1. In Firebase Console, open the `dewansh-ecom` project and add/select its Web app.
-2. Copy the complete web app config into `api/firebaseConfig.js`. The existing file is missing the Web App `appId` and `messagingSenderId`; replace both empty values from the Firebase Console.
+2. Verify that every value in `api/firebaseConfig.js` matches the Web app config in Firebase Console.
 3. In **Authentication > Sign-in method**, enable **Email/Password**.
 4. In **Authentication > Settings > Authorized domains**, add `localhost` and your GitHub Pages hostname.
 5. Create a Firestore database.
