@@ -32,6 +32,9 @@
           if (error.code === "functions/permission-denied") {
             throw new Error("This account cannot place orders. Check that its customer profile is active.");
           }
+          if (error.code === "functions/internal") {
+            throw new Error(`The checkout service encountered an error. Reference: ${order.requestId}. Please try again; if it continues, share this reference with the administrator.`);
+          }
           throw error;
         }
       });
